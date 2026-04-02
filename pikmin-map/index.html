@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.2">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="zh-TW"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Pikmin 蘑菇圖鑑 | 極簡版&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>:root { --primary-green: #8bc34a; --bg-light: #f9fbe7; --accent-orange: #ff7043; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>body { font-family: sans-serif; background-color: var(--bg-light); margin: 0; padding: 0 10px 40px; display: flex; flex-direction: column; align-items: center; }</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* 極致壓縮的導覽列 */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.filter-container {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>position: fixed; top: 0; left: 50%; transform: translateX(-50%);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 100%; max-width: 900px; background: rgba(255, 255, 255, 0.95);<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>backdrop-filter: blur(10px); padding: 8px 0; /* 縮減上下內距 */</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-bottom: 1px solid rgba(0,0,0,0.05);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 1000;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transition: transform 0.3s ease-in-out;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.nav-up { transform: translateX(-50%) translateY(-110%); }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.filter-group {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex; gap: 4px; overflow-x: auto; /* 手機版改為橫向滑動，不換行 */</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 4px 10px; -webkit-overflow-scrolling: touch;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>scrollbar-width: none; /* 隱藏捲軸 */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.filter-group::-webkit-scrollbar { display: none; }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: 1.5px solid var(--primary-green); background: white; color: var(--primary-green);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 5px 12px; border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 0.8rem;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transition: 0.2s; white-space: nowrap; flex-shrink: 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn.active { background: var(--primary-green); color: white; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn-sub { border-color: #aed581; color: #689f38; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn-sub.active { background: #aed581; color: white; }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* 調整內容區距離，因為 Header 變短了，這裡也縮減 */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.grid-wrapper { margin-top: 60px; width: 100%; display: flex; justify-content: center; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>#sub-filter-area { border-top: 1px solid #f0f0f0; margin-top: 5px; padding-top: 5px; }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 10px; width: 100%; max-width: 900px; padding-top: 10px; }</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>@media (min-width: 600px) {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>.grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.grid-wrapper { margin-top: 80px; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; border: 1px solid #eee; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.card img { width: 100%; height: auto; aspect-ratio: 4/5; object-fit: cover; background-color: #f0f0f0; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.card-body { padding: 10px; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.tag-list { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 5px; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.tag { font-size: 0.6rem; color: #8bc34a; background: #f1f8e9; padding: 1px 6px; border-radius: 4px; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.coord-display { background: #f8f8f8; padding: 6px; border-radius: 6px; font-family: monospace; font-size: 0.75rem; margin-bottom: 8px; text-align: center; color: #777; word-break: break-all; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.copy-btn { background-color: var(--accent-orange); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 0.85rem; }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>#toast { visibility: hidden; background: rgba(0,0,0,0.8); color: #fff; padding: 10px 20px; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); border-radius: 20px; z-index: 2000; font-size: 0.9rem; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>#toast.show { visibility: visible; animation: fade 2.5s; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>@keyframes fade { 0%, 100% { opacity: 0; } 10%, 90% { opacity: 1; } }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div id="navbar" class="filter-container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="cat-group" class="filter-group"&gt;載入中...&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="sub-filter-area" style="display: none;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="tag-group" class="filter-group"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div class="grid-wrapper"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="grid" class="grid"&gt;讀取中...&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div id="toast"&gt;✅ 座標已複製&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTQDOlnsORiDWKfJVWLEgF5UraDT77KsKwSXn4vj10PWk17q29VpK1uDGJriLYY4_KcfDTxoqpWx-wG/pub?output=csv';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let rawData = [];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let currentCat = '全部';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let currentTag = '全部';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 智慧隱藏邏輯</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let lastScrollTop = 0;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const navbar = document.getElementById('navbar');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>window.addEventListener('scroll', function() {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let scrollTop = window.pageYOffset || document.documentElement.scrollTop;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (scrollTop &gt; lastScrollTop &amp;&amp; scrollTop &gt; 50) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>navbar.classList.add('nav-up');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>navbar.classList.remove('nav-up');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>lastScrollTop = scrollTop &lt;= 0 ? 0 : scrollTop;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}, false);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function fixImageUrl(url) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (!url) return '';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (url.includes('drive.google.com')) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let fileId = (url.includes('/d/')) ? url.split('/d/')[1].split('/')[0] : url.split('id=')[1].split('&amp;')[0];</p>
+<p class="p1"><span class="Apple-converted-space">            </span>return `https://drive.google.com/thumbnail?id=${fileId}&amp;sz=w1000`;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>return url;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function init() {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>Papa.parse(csvUrl, {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>download: true, header: true,</p>
+<p class="p1"><span class="Apple-converted-space">            </span>complete: function(results) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>rawData = results.data.filter(row =&gt; row.Category &amp;&amp; row.Coordinates);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>renderCatFilters();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>filterLogic();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function renderCatFilters() {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const cats = [...new Set(rawData.map(i =&gt; i.Category))];</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let html = `&lt;button class="btn active" onclick="selectCat('全部', this)"&gt;全部區域&lt;/button&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>cats.forEach(c =&gt; html += `&lt;button class="btn" onclick="selectCat('${c}', this)"&gt;${c}&lt;/button&gt;`);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('cat-group').innerHTML = html;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function selectCat(cat, btn) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>currentCat = cat; currentTag = '全部';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.querySelectorAll('#cat-group .btn').forEach(b =&gt; b.classList.remove('active'));</p>
+<p class="p1"><span class="Apple-converted-space">        </span>btn.classList.add('active');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const subArea = document.getElementById('sub-filter-area');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (cat === '全部') {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>subArea.style.display = 'none';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>subArea.style.display = 'block';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>renderTagFilters(cat);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>filterLogic();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function renderTagFilters(cat) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const filteredByCat = rawData.filter(i =&gt; i.Category === cat);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let allTags = [];</p>
+<p class="p1"><span class="Apple-converted-space">        </span>filteredByCat.forEach(item =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (item.Tags) allTags.push(...item.Tags.split(',').map(t =&gt; t.trim()));</p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const uniqueTags = [...new Set(allTags)].filter(t =&gt; t);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let html = `&lt;button class="btn btn-sub active" onclick="selectTag('全部', this)"&gt;全部類型&lt;/button&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>uniqueTags.forEach(t =&gt; html += `&lt;button class="btn btn-sub" onclick="selectTag('${t}', this)"&gt;${t}&lt;/button&gt;`);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('tag-group').innerHTML = html;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function selectTag(tag, btn) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>currentTag = tag;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.querySelectorAll('#tag-group .btn').forEach(b =&gt; b.classList.remove('active'));</p>
+<p class="p1"><span class="Apple-converted-space">        </span>btn.classList.add('active');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>filterLogic();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function filterLogic() {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let data = rawData;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (currentCat !== '全部') data = data.filter(i =&gt; i.Category === currentCat);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (currentTag !== '全部') data = data.filter(i =&gt; i.Tags &amp;&amp; i.Tags.split(',').map(t =&gt; t.trim()).includes(currentTag));</p>
+<p class="p1"><span class="Apple-converted-space">        </span>display(data);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function display(data) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const container = document.getElementById('grid');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>container.innerHTML = data.map(item =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const tagHtml = item.Tags ? item.Tags.split(',').map(t =&gt; `&lt;span class="tag"&gt;${t.trim()}&lt;/span&gt;`).join('') : '';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>return `</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;img src="${fixImageUrl(item.ImageURL)}" onerror="this.src='https://placehold.co/400x500?text=圖片載入中'"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="card-body"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="tag-list"&gt;${tagHtml}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="coord-display"&gt;${item.Coordinates}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button class="copy-btn" onclick="copyText('${item.Coordinates}')"&gt;複製座標&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}).join('');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function copyText(t) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>navigator.clipboard.writeText(t).then(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const s = document.getElementById("toast");</p>
+<p class="p1"><span class="Apple-converted-space">            </span>s.className = "show";</p>
+<p class="p1"><span class="Apple-converted-space">            </span>setTimeout(() =&gt; s.className = "", 2500);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>window.onload = init;</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
